@@ -17,6 +17,9 @@ const commonStyled = css`
   &:focus {
         border-color: ${dark};
     }
+&+& 
+
+
 `
 type CommonType= {
     children: React.ReactNode;
