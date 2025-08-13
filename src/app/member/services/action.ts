@@ -132,6 +132,33 @@ export async function processLogin(errors, formData:FormData) {
   // 로그인 성공시 페이지 이동 redirectUrl 이 있다면 그 주소로 이도 ㅇ아니면 메이페이지로 이동 
   const redirectUrl = formData.get("redirectUrl")?.toString();
   redirect(redirectUrl ? redirectUrl: '/')
-
   
+}
+/**
+ * 로그인 한 회원 정보 조회 
+ *  - 요청 해더 Authorization :Bearer 토큰 
+ * @param params 
+ */
+export async function getLoggedMember() {
+  try{
+    const coookie = await cookies()
+    const token = coookie.get('token')?.value
+    if(!token) return;
+    const apiUrl = `${process.env.API_URL}/member`
+    const res = await fetch(apiUrl,{
+      method: 'GET',
+      headers: {
+        Authorization : `Bearer ${token}`,
+      },
+    });
+    if(res.status === 200){
+      return await res.json()
+    }
+    return await res.json()
+  }catch (err){
+    console.log("getLoggedMember() error", err)
+  }
+  // 토큰이 만료 되었거나 이상이 있는 경우 - 쿠키 제거 
+  const cookie = await cookies()
+  cookie.delete
 }
