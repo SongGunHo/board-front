@@ -1,13 +1,17 @@
 import { error } from "console";
 import React from "react";
-const JoinForm =({error, action, pending});
-}) =>{
-    return 
-    <form  action={action} autoComplete="off">
-        <input type="text" name="email" />
-        <input type="text" name="password" />
-        <button type="submit" disabled={!pending}>가입 하기</button>
-    </form>
-}
+import styled from "styled-components";
+
+const StyledForm  = styled.form`
+`;
+
+
+const JoinForm =({error, action, pending})=>{
+     return (
+    <StyledForm  action={action} autoComplete="off">
+
+    </StyledForm>
+    )
+};
 
 export default React.memo(JoinForm);
