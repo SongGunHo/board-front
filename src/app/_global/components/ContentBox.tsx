@@ -3,11 +3,6 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 
-type ContentBoxType ={
-  children: React.ReactNode
-  
-}
-
 const ContentBox = ({ children, className, width }) => {
   return (
     <section className={'layout-width ' + className} width={width}>

@@ -3,3 +3,4 @@ type TitleType= {
     border?: boolean
     center?: boolean
 }
+export default TitleType

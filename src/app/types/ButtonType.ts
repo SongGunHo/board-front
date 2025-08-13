@@ -3,8 +3,8 @@ type ButtonType = {
   width?: number |string
   height?: number
   color?: string
-  fontcolor?: string
-  fontsize?: string
+  fontColor?: string
+  fontSize?: string
 }
 
 export default ButtonType
