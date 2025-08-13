@@ -1,7 +1,7 @@
 'use client'
 import React, {useActionState, useCallback , useState} from "react"
 import { processJoin } from "../services/action"
-import JoinForm from "./_conponents/JoinForm"
+import JoinForm from "../_components/JoinForm"
 
  type FormType ={
     email : string
