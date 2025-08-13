@@ -1,6 +1,6 @@
 'use client'
 import styled, { css } from 'styled-components'
-import ButtonType from '../types/ButtonType'
+import ButtonType from '@/app/types/ButtonType'
 import color from '../styles/color'
 import fontsize from '../styles/fontsize'
 
@@ -24,7 +24,7 @@ export const Button = styled.button<ButtonType>`
   ${({ width }) =>
     width &&
     css`
-      width: ${width}px;
+      width: ${typeof width === 'string'? width : width + 'px'};
     `}
     ${({ height }) =>
     height &&
@@ -61,3 +61,6 @@ export const Button = styled.button<ButtonType>`
     `
   }}
 `
+const SubmitButton = (props) =>{
+  return <Button {...props}>{props.children}</Button>
+}
