@@ -1,11 +1,13 @@
 'use client' // 훅을 사용 하기 위ㅏ해서 
-import React, {useActionState , useState , useCallback} from "react"
+import React, {useActionState , useState , useCallback, useEffect} from "react"
+import { useSearchParams } from "next/navigation"
 import { processLogin } from "../services/action"
 import LoginForm from "../_components/LoginForm"
 
 type FormType = {
     email: string
     password: string 
+    redircetUrl?:string
 }
 const LoginContainer =() =>{
     const [error, action, pending] = useActionState <any , any>
@@ -13,6 +15,10 @@ const LoginContainer =() =>{
     const [form , setForm] = useState<FormType>({
         email: '',
         password : '', 
+    })
+    const searchParams = useSearchParams();
+    useEffect (()=>{
+        
     })
 
     const onChange = useCallback((e)=>{

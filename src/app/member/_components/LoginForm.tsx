@@ -6,16 +6,23 @@ import MessageBox from "@/app/_global/components/MessgeBox";
 import { MdPending } from "react-icons/md";
 
 const StyledForm = styled.form`
-
+    .message {
+        margin-bottom: 10px;
+    }
 
 `;
 
 const LoginForm =({error, action, pending, onChange, form}) =>{
 return ( 
     <StyledForm action={action} autoComplete="off">
+        <input type="hidden" name="redirectUrl" value={form.redircetUrl?? ''}  />
         <Input type="text" name="email" placeholder="이메일을 입력 하세요" value={form.email} onChange={onChange}/>
+        <MessageBox color="denger">{error?.email}</MessageBox>
         <Input type="password" name="password"placeholder="비밀 번호를 입력 하세요" value={form.password} onChange={onChange}/>
-        <SubmitButton type="submit" disable={pending}}>로그인 </SubmitButton>
+        <MessageBox color="denger">{error?.password}</MessageBox>
+        <SubmitButton type="submit">로그인 </SubmitButton>
+        <MessageBox color="denger">{error?.global}</MessageBox>
+
     </StyledForm>
 )
 

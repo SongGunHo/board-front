@@ -1,7 +1,11 @@
-'use servicer'
+'use servicer' //  유저 서버 쪽 담당 ???
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { TbRulerMeasure } from 'react-icons/tb'
+import { Cookie } from 'react-router-dom'
 
- //  유저 서버 쪽 담당 ???
+
+
 /**
  * 회원 가입 처리
  *
@@ -47,7 +51,10 @@ export async function processJoin(error,formData: FormData) {
     errors.confirmPassword.push('비밀번호가 일치하지 않습니다.')
     hasErrors = true
   }
-
+  // 검증실패시에는 에러 메세지를 출력하기 위한 상태값을 반환 
+  if(hasError){
+    return error
+  }
 
   // 회원 가입 처리를 위한 api 서버에 요청
   try {
@@ -83,5 +90,48 @@ export async function processJoin(error,formData: FormData) {
  * @param formData 
  */
 export async function processLogin(errors, formData:FormData) {
+  errors ={}
+
+  const params: {email :string | undefined, password?: string; redircet} ={
+    password: formData.get('password')?.toString(),
+  }
+
+  if(!params.email || !params.email.trim()){
+    errors.email='이메일을 입력 하새요'
+    hasError = true
+  }
+
+  if(!params.password || !params.password.trim()){
+    errors.password = '비밀 번호를 입력을 하세요'
+    hasErrors = true
+  }
+  // 유효성 검사 E
+  // API 백엔드로 요청을 보냄 
+  const apiUrl = `${process.env.API_URL}/member/token`
+  const res = await fetch(apiUrl, {
+    method:   'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body:JSON.stringify(params)
+
+  });
+  if(res.status === 2000){ // 로그인 성공 토큰 발급 성공
+    const token = await res.text();
+    // 로그인 처리 
+    const coookie = await cookies()
+    cookies.set('token', token, {
+      HttpOnly: true,
+      path: '/',
+    })
+
+  }else { // 로그인 실패 
+    const json = await res.json()
+    const json.message.global ? json.message : {global: json.message}
+  }
+  // 로그인 성공시 페이지 이동 redirectUrl 이 있다면 그 주소로 이도 ㅇ아니면 메이페이지로 이동 
+  const redirectUrl = formData.get("redirectUrl")?.toString();
+  redirect(redirectUrl ? redirectUrl: '/')
+
   
 }
