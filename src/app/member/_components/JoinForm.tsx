@@ -58,7 +58,7 @@ const JoinForm =({error, action, pending, onChange, onToggle})=>{
            회원가입 약관에 동의합니다.
          </div>
          <div>약관 동의 작성...</div>
-         <SubmitButton type="submit">가입하기</SubmitButton>
+         <SubmitButton type="submit" disable={pending}>가입하기</SubmitButton>
        </StyledForm>
      )
 };
