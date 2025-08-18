@@ -1,6 +1,8 @@
 'use server'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
+import { Revalidate } from 'next/dist/server/lib/cache-control'
+import { revalidateTag } from 'next/cache'
 
 /**
  * 회원가입 처리 함수
@@ -142,6 +144,7 @@ export async function processLogin(errors, formData: FormData) {
       httpOnly: true, // JS에서 접근 불가
       path: '/', // 전체 경로에서 사용 가능
     })
+    revalidateTag('loddedMember')
   } else {
     // 로그인 실패 → 서버에서 내려준 메시지 반환
     const json = await res.json()
@@ -171,6 +174,9 @@ export async function getLoggedMember() {
       headers: {
         Authorization: `Bearer ${token}`, // JWT 인증 헤더
       },
+      next:{
+        tags: ['loggedMember']
+      }
     })
 
     if (res.status === 200) {

@@ -6,7 +6,7 @@ import { NextRequest } from 'next/server'
  * @param request
  * @returns
  */
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest) { // async   비동기 
   const cookie = await cookies()
   cookie.delete('token')
 
