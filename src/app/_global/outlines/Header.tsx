@@ -35,6 +35,7 @@ const StyledHeader = styled.header`
 `
 
 const Header = () => {
+  const { isLogin, isAdmin, loggedMember } = useUser()
   return (
     <StyledHeader>
       <div className="inner layout-width">
@@ -45,22 +46,57 @@ const Header = () => {
           </Link>
         </div>
         <div className="right">
-          <Link href="/member/join">
-            <Button type="button">
-              <FiUserPlus />
-              회원가입
-            </Button>
-          </Link>
-          <Link href="/member/login">
-            <Button type="button" color="secondary">
-              <FiLogIn />
-              로그인
-            </Button>
-          </Link>
+          {isLogin ? (
+            <>
+              {/*
+              <span>
+                {loggedMember.name}({loggedMember.email})
+              </span> */}
+              <Link href="/mypage">
+                <Button type="button">
+                  <CgProfile />
+                  마이페이지
+                </Button>
+              </Link>
+              <a href="/member/api/logout">
+                <Button type="button" color="secondary">
+                  <FiLogOut />
+                  로그아웃
+                </Button>
+              </a>
+              {isAdmin && (
+                <a href="/admin">
+                  <Button type="button" color="info">
+                    <FaCog />
+                    사이트 관리
+                    <LinkLoding/>
+                  </Button>
+                </a>
+              )}
+            </>
+          ) : (
+            <>
+              <Link href="/member/join">
+                <Button type="button">
+                  <FiUserPlus />
+                  회원가입
+                  <LinkLoding/>
+                </Button>
+              </Link>
+              <Link href="/member/login">
+                <Button type="button" color="secondary">
+                  <FiLogIn />
+                  로그인
+                  <LinkLoding/>
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </StyledHeader>
   )
+}
 }
 
 export default React.memo(Header)
