@@ -6,6 +6,7 @@ import logo from '../assets/images/logo.png'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '../components/Buttons'
+import LinkLoding from '../components/LinkLoading'
 const StyledHeader = styled.header`
   background: #fff;
 
