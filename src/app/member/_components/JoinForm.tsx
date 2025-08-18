@@ -7,20 +7,20 @@ import MessageBox from '@/app/_global/components/MessgeBox'
 
 const StyledForm = styled.form`
   messge {
-    margi-bottom: 10px ;
+    margi-bottom: 10px;
   }
 `
 
 const JoinForm = ({ error, action, pending, onChange, onToggle, form }) => {
   return (
     <StyledForm action={action} autoComplete="off">
-      <Input type="hidden" name="termsAgree" value={Form.termAgree} />
+      <Input type="hidden" name="termsAgree" value={form.termAgree} />
 
       <Input
         type="text"
         name="email"
         placeholder="이메일을 입력을 하세요"
-        value={Form.email}
+        value={form.email}
         onChange={onChange}
       />
       <MessageBox color="danger">{error?.email}</MessageBox>
@@ -29,7 +29,7 @@ const JoinForm = ({ error, action, pending, onChange, onToggle, form }) => {
         type="password"
         name="password"
         placeholder="비밀 번호를 입력 하세요"
-        value={Form.password}
+        value={form.password}
         onChange={onChange}
       />
       <MessageBox color="danger">{error?.password}</MessageBox>
@@ -37,7 +37,7 @@ const JoinForm = ({ error, action, pending, onChange, onToggle, form }) => {
         type="password"
         name="confirmPassword"
         placeholder="비밀 번호를 확인 하세요"
-        value={Form.confirmPassword}
+        value={form.confirmPassword}
         onChange={onChange}
       />
       <MessageBox color="danger">{error?.confirmPassword}</MessageBox>
@@ -45,7 +45,7 @@ const JoinForm = ({ error, action, pending, onChange, onToggle, form }) => {
         type="text"
         name="name"
         placeholder="회원이름을 입력 하세요"
-        value={Form.name}
+        value={form.name}
         onChange={onChange}
       />
       <MessageBox color="danger">{error?.name}</MessageBox>
@@ -53,7 +53,7 @@ const JoinForm = ({ error, action, pending, onChange, onToggle, form }) => {
         type="text"
         name="mobile"
         placeholder="전화번호를 입력 하세요"
-        value={Form.mobile}
+        value={form.mobile}
         onChange={onChange}
       />
       <MessageBox color="danger">{error?.mobile}</MessageBox>

@@ -1,159 +1,182 @@
-'use servicer' //  유저 서버 쪽 담당 ???
-import { cookies } from 'next/headers'
+'use server'
 import { redirect } from 'next/navigation'
-/**
- * 회원 가입 처리
- *
- */
-export async function processJoin(error,formData: FormData) {
-  error =  {}
+import { cookies } from 'next/headers'
 
-  const params = {}
-  // 필요한 필드와 값만 추출 
-  for (const [key, value ] of formData.entries()){
-    if(key.startsWith("$ACTION_")) continue;
-    let _value: string | boolean = value.toString();
-    if(['true', 'false'].includes(_value)){
+/**
+ * 회원가입 처리 함수
+ *  - formData에서 전달된 값을 추출
+ *  - 필수 값 검증
+ *  - 비밀번호 일치 여부 확인
+ *  - API 서버에 회원가입 요청
+ *  - 성공 시 로그인 페이지로 이동
+ */
+export async function processJoin(errors, formData: FormData) {
+  errors = {}
+  const params: any = {}
+
+  // FormData에서 key, value 추출
+  for (const [key, value] of formData.entries()) {
+    if (key.startsWith('$ACTION_')) continue // Next.js 내부 액션 관련 필드 제외
+
+    let _value: string | boolean = value.toString()
+
+    // 'true' / 'false' 문자열을 boolean 값으로 변환
+    if (['true', 'false'].includes(_value)) {
       _value = _value === 'true'
     }
+
     params[key] = _value
   }
-  let hasError: boolean = false
-  // 필수 항목 검증 s
-  const requiredFields ={
-    email: '이메일을 입력 하세요',
-    password:'비밀 번호를 입력 하새요',
-    confirmPassword: '비밀 번호를 다시 입력 하세요',
-    name: '이름을 입력 하세요',
-    mobile: '전화번호를 입력 하세요',
-    termsAgree : '회원 가입 약관에 동의 하세요 ',
+
+  let hasErrors: boolean = false
+
+  // 필수 항목 검증 (비어있으면 오류 메시지 추가)
+  const requiredFields = {
+    email: '이메일을 입력하세요.',
+    password: '비밀번호를 입력하세요.',
+    confirmPassword: '비밀번호를 확인하세요.',
+    name: '회원이름을 입력하세요.',
+    mobile: '휴대전화번호를 입력하세요.',
+    termsAgree: '회원가입 약관에 동의하세요.',
   }
-  for(const [field, message] of Object.entries(requiredFields)) {
-    if (!params[field] ||(typeof params[field] === 'string' && !params[field].trim())
+
+  for (const [field, message] of Object.entries(requiredFields)) {
+    if (
+      !params[field] ||
+      (typeof params[field] === 'string' && !params[field].trim())
     ) {
       hasErrors = true
-
       errors[field] = errors[field] ?? []
       errors[field].push(message)
     }
   }
-  // 필수 항목 검증 E
 
-  // 비밀번호, 비밀번호 확인 일치 여부
+  // 비밀번호와 비밀번호 확인 일치 여부 체크
   const password = params.password?.trim()
   if (password && password !== params.confirmPassword?.trim()) {
     errors.confirmPassword = errors.confirmPassword ?? []
     errors.confirmPassword.push('비밀번호가 일치하지 않습니다.')
     hasErrors = true
   }
-  // 검증실패시에는 에러 메세지를 출력하기 위한 상태값을 반환 
-  if(hasError){
-    return error
+
+  // 검증 실패 시 오류 메시지 반환 → 화면에서 표시
+  if (hasErrors) {
+    return errors
   }
 
-  // 회원 가입 처리를 위한 api 서버에 요청
+  // API 서버에 회원가입 요청
   try {
-    const apiurl = `${process.env.API_URL}/member`
-    const res = await fetch(apiurl, {
+    const apiUrl = `${process.env.API_URL}/member`
+    const res = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Content-type': 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(params),
-    }) 
-    // API 백엔드에서 검증 실패시 메세지
+    })
+
+    // API 서버에서 회원가입 실패 메시지를 내려줄 경우
     if (res.status !== 201) {
-      const {message}= await res.json()
-      return message
+      const { messages } = await res.json()
+      return messages
     }
-  }catch (err: any){ 
-    return {global: [err?.message]}
-  }
-  // 검증실패시에는 에러 메세지를 출력하기 위한 상태값을 반환 
-  if(hasError){
-    return error
+  } catch (err: any) {
+    // 네트워크 오류 등 예외 발생 시
+    return { global: err?.message }
   }
 
-  //회원 가입 완료시 로그인 페이지로 이동 
+  // 회원가입 성공 → 로그인 페이지로 이동
   redirect('/member/login')
-
-  console.log('params', params) // async 비동기 
 }
-/**
- * 로그인 처리 
- * @param errors 
- * @param formData 
- */
-export async function processLogin(errors, formData:FormData) {
-  errors ={}
 
-  const params: {email :string | undefined, password?: string; redircet} ={
+/**
+ * 로그인 처리 함수
+ *  - 이메일, 비밀번호 유효성 검증
+ *  - API 서버로 로그인 요청
+ *  - 성공 시 JWT 토큰을 쿠키에 저장
+ *  - redirectUrl이 있으면 해당 경로로 이동, 없으면 메인(/)으로 이동
+ */
+export async function processLogin(errors, formData: FormData) {
+  errors = {}
+  let hasErrors: boolean = false
+
+  // FormData에서 email, password 추출
+  const params: { email?: string; password?: string; redirectUrl?: string } = {
+    email: formData.get('email')?.toString(),
     password: formData.get('password')?.toString(),
   }
 
-  if(!params.email || !params.email.trim()){
-    errors.email='이메일을 입력 하새요'
-    hasError = true
-  }
-
-  if(!params.password || !params.password.trim()){
-    errors.password = '비밀 번호를 입력을 하세요'
+  // 유효성 검사 - 이메일
+  if (!params.email || !params.email.trim()) {
+    errors.email = '이메일을 입력하세요.'
     hasErrors = true
   }
-  // 유효성 검사 E
-  // API 백엔드로 요청을 보냄 
+
+  // 유효성 검사 - 비밀번호
+  if (!params.password || !params.password.trim()) {
+    errors.password = '비밀번호를 입력하세요.'
+    hasErrors = true
+  }
+
+  if (hasErrors) {
+    return errors // 오류 발생 시 메시지 반환
+  }
+
+  // 로그인 요청 API 호출
   const apiUrl = `${process.env.API_URL}/member/token`
   const res = await fetch(apiUrl, {
-    method:   'POST',
+    method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body:JSON.stringify(params)
+    body: JSON.stringify(params),
+  })
 
-  });
-  if(res.status === 2000){ // 로그인 성공 토큰 발급 성공
-    const token = await res.text();
-    // 로그인 처리 
-    const coookie = await cookies()
-    cookies.set('token', token, {
-      HttpOnly: true,
-      path: '/',
+  if (res.status === 200) {
+    // 로그인 성공 → 토큰 발급
+    const token = await res.text()
+
+    // 토큰을 쿠키에 저장
+    const cookie = await cookies()
+    cookie.set('token', token, {
+      httpOnly: true, // JS에서 접근 불가
+      path: '/', // 전체 경로에서 사용 가능
     })
-
-  }else { // 로그인 실패 
+  } else {
+    // 로그인 실패 → 서버에서 내려준 메시지 반환
     const json = await res.json()
-    const json.message.global ? json.message : {global: json.message}
+    return json.messages.global ? json.messages : { global: json.messages }
   }
-  // 로그인 성공시 페이지 이동 redirectUrl 이 있다면 그 주소로 이도 ㅇ아니면 메이페이지로 이동 
-  const redirectUrl = formData.get("redirectUrl")?.toString();
-  redirect(redirectUrl ? redirectUrl: '/')
-  
+
+  // 로그인 성공 시 이동할 경로
+  const redirectUrl = formData.get('redirectUrl')?.toString()
+  redirect(redirectUrl ? redirectUrl : '/')
 }
+
 /**
- * 로그인 한 회원 정보 조회 
- *  - 요청 해더 Authorization :Bearer 토큰 
- * @param params 
+ * 로그인한 회원 정보 조회 함수
+ *  - 쿠키에서 JWT 토큰 꺼내오기
+ *  - API 서버에 GET 요청 (Authorization 헤더 포함)
+ *  - 성공 시 회원 정보 반환
  */
 export async function getLoggedMember() {
-  try{
-    const coookie = await cookies()
-    const token = coookie.get('token')?.value
-    if(!token) return;
+  try {
+    const cookie = await cookies()
+    const token = cookie.get('token')?.value
+    if (!token) return // 토큰 없으면 로그인 안된 상태
+
     const apiUrl = `${process.env.API_URL}/member`
-    const res = await fetch(apiUrl,{
+    const res = await fetch(apiUrl, {
       method: 'GET',
       headers: {
-        Authorization : `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, // JWT 인증 헤더
       },
-    });
-    if(res.status === 200){
-      return await res.json()
+    })
+
+    if (res.status === 200) {
+      return await res.json() // 회원 정보 반환
     }
-    return await res.json()
-  }catch (err){
-    console.log("getLoggedMember() error", err)
+  } catch (err) {
+    console.log('getLoggedMember() error:', err)
   }
-  // 토큰이 만료 되었거나 이상이 있는 경우 - 쿠키 제거 
-  const cookie = await cookies()
-  cookie.delete
 }

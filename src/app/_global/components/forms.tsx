@@ -1,12 +1,11 @@
 'use client'
-import styled , {css} from "styled-components"
-import color from "../styles/color"
+import styled, { css } from 'styled-components'
+import color from '../styles/color'
 
-import fontsize from "../styles/fontsize"
+import fontsize from '../styles/fontsize'
 
-
-const { dark, light} = color
-const {medium} = fontsize
+const { dark, light } = color
+const { medium } = fontsize
 const commonStyled = css`
   color: ${dark};
   border : 1px solid ${light};
@@ -21,13 +20,13 @@ const commonStyled = css`
 
 
 `
-type CommonType= {
-    children: React.ReactNode;
-    width?: number
-    height?: number
+type CommonType = {
+  children: React.ReactNode
+  width?: number
+  height?: number
 }
 
-export const Input = styled.input`
+export const Input = styled.input<CommonType>`
   ${commonStyled}
   height: 50px;
   ${({ width }) =>
@@ -41,7 +40,7 @@ export const Input = styled.input`
       width: ${height}px;
     `}
 `
-export const Textarea  = styled.textarea`
-    ${commonStyled};
-    height: 15px;
-`;
+export const Textarea = styled.textarea<CommonType>`
+  ${commonStyled};
+  height: 15px;
+`
