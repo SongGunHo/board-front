@@ -1,9 +1,8 @@
 'use client'
 import styled, { css } from 'styled-components'
-import ButtonType from '@/app/types/ButtonType'
+import ButtonType from '../types/ButtonType'
 import color from '../styles/color'
 import fontsize from '../styles/fontsize'
-const {extra} = fontsize
 
 const commonStyle = css`
   width: 120px;
@@ -25,7 +24,7 @@ export const Button = styled.button<ButtonType>`
   ${({ width }) =>
     width &&
     css`
-      width: ${typeof width === 'string'? width : width + 'px'};
+      width: ${typeof width === 'string' ? width : width + 'px'};
     `}
     ${({ height }) =>
     height &&
@@ -62,6 +61,11 @@ export const Button = styled.button<ButtonType>`
     `
   }}
 `
-export  const SubmitButton = (props) =>{
-  return <Button {...props} width="100px" height={60} fontsize="extra">{props.children}</Button>
+
+export const SubmitButton = (props) => {
+  return (
+    <Button {...props} width="100%" height={60} fontSize="extra">
+      {props.children}
+    </Button>
+  )
 }

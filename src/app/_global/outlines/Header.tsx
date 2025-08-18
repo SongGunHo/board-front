@@ -1,12 +1,16 @@
 'use client'
 import React from 'react'
 import styled from 'styled-components'
-import { FiUserPlus, FiLogIn } from 'react-icons/fi'
+import { FiUserPlus, FiLogIn, FiLogOut } from 'react-icons/fi'
+import { CgProfile } from 'react-icons/cg'
+import { FaCog } from 'react-icons/fa'
 import logo from '../assets/images/logo.png'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '../components/Buttons'
-import LinkLoding from '../components/LinkLoading'
+import useUser from '../hooks/useUser'
+import LinkLoading from '../components/LinkLoading'
+
 const StyledHeader = styled.header`
   background: #fff;
 
@@ -52,10 +56,11 @@ const Header = () => {
               <span>
                 {loggedMember.name}({loggedMember.email})
               </span> */}
-              <Link href="/mypage">
+              <Link href="/mypage" prefetch={false}>
                 <Button type="button">
                   <CgProfile />
                   마이페이지
+                  <LinkLoading />
                 </Button>
               </Link>
               <a href="/member/api/logout">
@@ -69,25 +74,24 @@ const Header = () => {
                   <Button type="button" color="info">
                     <FaCog />
                     사이트 관리
-                    <LinkLoding/>
                   </Button>
                 </a>
               )}
             </>
           ) : (
             <>
-              <Link href="/member/join">
+              <Link href="/member/join" prefetch={false}>
                 <Button type="button">
                   <FiUserPlus />
                   회원가입
-                  <LinkLoding/>
+                  <LinkLoading />
                 </Button>
               </Link>
-              <Link href="/member/login">
+              <Link href="/member/login" prefetch={false}>
                 <Button type="button" color="secondary">
                   <FiLogIn />
                   로그인
-                  <LinkLoding/>
+                  <LinkLoading />
                 </Button>
               </Link>
             </>

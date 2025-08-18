@@ -1,6 +1,6 @@
 'use client'
 import { useSearchParams, usePathname } from 'next/navigation'
-import useUser from '../hooks/useUse'
+import useUser from '../hooks/useUser'
 import ContentBox from '../components/ContentBox'
 import { MainTitle } from '../components/TitleBox'
 import LoginContainer from '@/app/member/_containers/LoginContainer'

@@ -4,10 +4,10 @@ import './globals.css'
 import Header from './_global/outlines/Header'
 import Footer from './_global/outlines/Footer'
 import StyledComponentsRegistry from './registry'
-import { getLoggedMember } from './member/services/action'
-import { UserProvider } from './_global/contexts/UseContext'
+import { getLoggedMember } from './member/_services/actions'
+import { UserProvider } from './_global/contexts/UserContext'
 import { CommonProvider } from './_global/contexts/CommonContext'
-import LayoutContainer from './_global/wrappers/layoutConta'
+import LayoutContainer from './_global/wrappers/LayoutContainer'
 import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
