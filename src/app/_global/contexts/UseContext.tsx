@@ -21,6 +21,8 @@ function UserProvider({ children, loggedMember, token }) {
   const [isAdmin, setIsAdmin] = useState(
     loggedMember && loggedMember.authority === 'ADMIN',
   )
+  const [_token, setToken] = useState(token)
+  
 
   const value = {
     states: { loggedMember: member, isLogin, isAdmin, token },

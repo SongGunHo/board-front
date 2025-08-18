@@ -97,6 +97,5 @@ const Header = () => {
     </StyledHeader>
   )
 }
-}
 
 export default React.memo(Header)

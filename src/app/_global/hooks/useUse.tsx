@@ -4,14 +4,19 @@ import UserContext from '../contexts/UseContext'
 import { getLoggedMember } from '@/app/member/services/action'
 export default function useUser() {
   const {
-    states: { loggedMember, isLogin, isAdmin },
-    actions: { setLoggedMember, setIsAdmin, setIsLogin },
+    states: { loggedMember, isLogin, isAdmin, token },
+    actions: { setLoggedMember, setIsAdmin, setIsLogin, setToken },
   } = useContext(UserContext)
 
   useEffect(() => {
+    if (!isLogin && token) {
+      setToken(token)
+    }
+
     if (!isLogin) {
       ;(async () => {
         const member = await getLoggedMember()
+
         if (member) {
           setLoggedMember(member)
           setIsLogin(true)
@@ -19,7 +24,7 @@ export default function useUser() {
         }
       })()
     }
-  }, [isLogin, setIsAdmin, setIsLogin, setLoggedMember])
+  }, [isLogin, setIsAdmin, setIsLogin, setLoggedMember, token, setToken])
 
-  return { loggedMember, isLogin, isAdmin }
+  return { loggedMember, isLogin, isAdmin, token }
 }

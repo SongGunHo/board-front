@@ -1,23 +1,31 @@
 import type { Metadata } from 'next'
+import { cookies } from 'next/headers'
 import './globals.css'
 import Header from './_global/outlines/Header'
 import Footer from './_global/outlines/Footer'
 import StyledComponentsRegistry from './registry'
-import { CommonProvider } from './_global/contexts/CommonContext'
-import { getToken } from './_global/libs/utils'
+import { getLoggedMember } from './member/services/action'
 import { UserProvider } from './_global/contexts/UseContext'
-import { Redirect } from 'next/dist/lib/load-custom-routes'
+import { CommonProvider } from './_global/contexts/CommonContext'
+import LayoutContainer from './_global/wrappers/layoutConta'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: '게시판',
   description: '게시판 설명...',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const member = await getLoggedMember()
+  const cookie = await cookies()
+  if (member == null && cookie.has('token')) {
+    redirect('/member/api/logout?redirectUrl=/')
+  }
+
   return (
     <html lang="ko">
       <body>
@@ -27,9 +35,7 @@ export default function RootLayout({
               loggedMember={member}
               token={cookie.get('token')?.value}
             >
-              <Header />
-              <main className="main-content">{children}</main>
-              <Footer />
+              <LayoutContainer>{children}</LayoutContainer>
             </UserProvider>
           </CommonProvider>
         </StyledComponentsRegistry>
